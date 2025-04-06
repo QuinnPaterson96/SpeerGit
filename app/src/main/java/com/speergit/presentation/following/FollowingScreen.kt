@@ -63,28 +63,37 @@ fun FollowingScreen(
             }
 
             is FollowingUiState.Success -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(state.following) { user ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    navController.navigate("profile/${user.login}")
-                                }
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            AsyncImage(
-                                model = user.avatarUrl,
-                                contentDescription = null,
+                if (state.following.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("This user doesn't follow anyone.")
+                    }
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(state.following) { user ->
+                            Row(
                                 modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(CircleShape)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(text = user.login)
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        navController.navigate("profile/${user.login}")
+                                    }
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                AsyncImage(
+                                    model = user.avatarUrl,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .clip(CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(text = user.login)
+                            }
+                            Divider()
                         }
-                        Divider()
                     }
                 }
             }

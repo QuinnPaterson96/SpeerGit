@@ -1,5 +1,7 @@
 package com.speergit.di.modules
 
+import android.provider.ContactsContract.Profile
+import com.speergit.data.local.dao.ProfileDao
 import com.speergit.data.remote.api.GitHubApi
 import com.speergit.data.repository.GitHubRepositoryImpl
 import com.speergit.domain.repository.GitHubRepository
@@ -47,7 +49,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRepository(api: GitHubApi): GitHubRepository {
-        return GitHubRepositoryImpl(api)
+    fun provideRepository(api: GitHubApi, dao: ProfileDao): GitHubRepository {
+        return GitHubRepositoryImpl(api = api, dao = dao)
     }
 }
