@@ -2,11 +2,15 @@ package com.speergit.data.remote.dto
 
 import com.speergit.domain.model.GitHubUser
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class GitHubUserDto(
     val login: String,
     val name: String?,
     val bio: String?,
-    val avatar_url: String,
+    @Json(name = "avatar_url") val avatarUrl: String,
     val followers: Int,
     val following: Int
 ) {
@@ -14,7 +18,7 @@ data class GitHubUserDto(
         login = login,
         name = name.orEmpty(),
         bio = bio.orEmpty(),
-        avatarUrl = avatar_url,
+        avatarUrl = avatarUrl,
         followers = followers,
         following = following
     )

@@ -35,13 +35,15 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideGitHubApi(baseUrl: String): GitHubApi {
+    fun provideGitHubApi(okHttpClient: OkHttpClient, baseUrl: String): GitHubApi {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
+            .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(GitHubApi::class.java)
     }
+
 
     @Provides
     @Singleton

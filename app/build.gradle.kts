@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
-    id("org.jetbrains.kotlin.kapt") // ✅ use string literal here
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
