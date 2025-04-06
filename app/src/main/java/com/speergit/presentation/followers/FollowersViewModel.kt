@@ -20,13 +20,24 @@ class FollowersViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<FollowersUiState>(FollowersUiState.Loading)
     val uiState: StateFlow<FollowersUiState> = _uiState.asStateFlow()
 
-    fun loadFollowers(username: String) {
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    fun loadFollowers(username: String, isRefresh: Boolean = false) {
+        if (isRefresh) {
+            _isRefreshing.value = true
+        } else {
+            _uiState.value = FollowersUiState.Loading
+        }
+
         viewModelScope.launch {
             try {
                 val followers = repository.getFollowers(username)
                 _uiState.value = FollowersUiState.Success(followers)
             } catch (e: Exception) {
-                _uiState.value = FollowersUiState.Error(e.toString())
+                _uiState.value = FollowersUiState.Error("Couldn't load followers")
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }

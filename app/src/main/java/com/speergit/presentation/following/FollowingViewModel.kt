@@ -19,13 +19,24 @@ class FollowingViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<FollowingUiState>(FollowingUiState.Loading)
     val uiState: StateFlow<FollowingUiState> = _uiState.asStateFlow()
 
-    fun loadFollowing(username: String) {
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    fun loadFollowing(username: String, isRefresh: Boolean = false) {
+        if (isRefresh) {
+            _isRefreshing.value = true
+        } else {
+            _uiState.value = FollowingUiState.Loading
+        }
+
         viewModelScope.launch {
             try {
                 val following = repository.getFollowing(username)
                 _uiState.value = FollowingUiState.Success(following)
             } catch (e: Exception) {
                 _uiState.value = FollowingUiState.Error("Couldn't load following list")
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }

@@ -19,18 +19,29 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
-    fun loadProfile(username: String) {
-        viewModelScope.launch {
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    fun loadProfile(username: String, isRefresh: Boolean = false) {
+        if (isRefresh) {
+            _isRefreshing.value = true
+        } else {
             _uiState.value = ProfileUiState.Loading
+        }
+
+        viewModelScope.launch {
             try {
                 val user = repository.getUser(username)
                 _uiState.value = ProfileUiState.Success(user)
             } catch (e: Exception) {
                 _uiState.value = ProfileUiState.Error(e.localizedMessage ?: "Error")
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }
 }
+
 
 sealed class ProfileUiState {
     object Idle : ProfileUiState()

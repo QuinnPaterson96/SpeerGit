@@ -83,6 +83,10 @@ dependencies {
     // Coroutines
     implementation(libs.coroutines.android)
 
+    // Swipe Refresh
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material) // needed for PullRefreshIndicator
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
