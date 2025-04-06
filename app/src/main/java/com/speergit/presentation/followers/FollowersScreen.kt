@@ -90,7 +90,9 @@ fun FollowersScreen(
                 }
             }
 
-            else -> {}
+            else -> {
+
+            }
         }
 
         PullRefreshIndicator(

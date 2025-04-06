@@ -23,24 +23,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class) // Needed to enable pull to refresh
 @Composable
 fun ProfileScreen(
     username: String,
     navController: NavController,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     val pullRefreshState = rememberPullRefreshState(
@@ -57,61 +59,68 @@ fun ProfileScreen(
             .fillMaxSize()
             .pullRefresh(pullRefreshState)
     ) {
-        when (val uiState = state) {
+        when (val state = uiState) {
             is ProfileUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
 
-            is ProfileUiState.Success -> {
-                val user = uiState.user
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    AsyncImage(
-                        model = user.avatarUrl,
-                        contentDescription = "Avatar",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape)
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(user.name, style = MaterialTheme.typography.headlineSmall)
-                    Text("@${user.login}", style = MaterialTheme.typography.bodyMedium)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(user.bio, style = MaterialTheme.typography.bodySmall)
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        ClickableText(
-                            text = AnnotatedString("${user.followers} followers"),
-                            onClick = {
-                                navController.navigate("followers/${user.login}")
-                            }
-                        )
-                        ClickableText(
-                            text = AnnotatedString("${user.following} following"),
-                            onClick = {
-                                navController.navigate("following/${user.login}")
-                            }
-                        )
-                    }
-                }
-            }
-
             is ProfileUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("User not found", color = Color.Red)
+                }
+            }
+
+            is ProfileUiState.Success -> {
+                val user = state.user
+                val scrollState = rememberScrollState()
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        AsyncImage(
+                            model = user.avatarUrl,
+                            contentDescription = "Avatar",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(CircleShape)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(user.name, style = MaterialTheme.typography.headlineSmall)
+                        Text("@${user.login}", style = MaterialTheme.typography.bodyMedium)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(user.bio, style = MaterialTheme.typography.bodySmall)
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            ClickableText(
+                                text = AnnotatedString("${user.followers} followers"),
+                                onClick = {
+                                    navController.navigate("followers/${user.login}")
+                                }
+                            )
+                            ClickableText(
+                                text = AnnotatedString("${user.following} following"),
+                                onClick = {
+                                    navController.navigate("following/${user.login}")
+                                }
+                            )
+                        }
+                    }
                 }
             }
 
@@ -125,4 +134,3 @@ fun ProfileScreen(
         )
     }
 }
-
