@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SpeerGit</string>
+    <string name="title_activity_search_screen">SearchScreen</string>
 </resources>
