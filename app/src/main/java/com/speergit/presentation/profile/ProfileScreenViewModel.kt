@@ -31,7 +31,12 @@ class ProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val user = repository.getUser(username)
+                val user = if (isRefresh) {
+                    repository.fetchAndCacheUser(username)
+                } else {
+                    repository.getUser(username)
+                }
+
                 _uiState.value = ProfileUiState.Success(user)
             } catch (e: Exception) {
                 _uiState.value = ProfileUiState.Error(e.localizedMessage ?: "Error")
